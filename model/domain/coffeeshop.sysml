@@ -1,7 +1,5 @@
-private import ScalarValues::*;
-private import 
-
 package CoffeeShop {
+    private import ScalarValues::*;
 
     doc /* A small independent coffee shop - 
            toy exercise for learning SysML v2 */
