@@ -1,5 +1,6 @@
 package CoffeeShop {
     private import ScalarValues::*;
+    private import OrderLifeCycle::*;
 
     doc /* A small independent coffee shop - 
            toy exercise for learning SysML v2 */
@@ -107,5 +108,7 @@ package CoffeeShop {
 
         ref customer : Customer;
         part lines : OrderLine[1..*];  // An order must have at least one line
+
+        exhibit state orderLifecycle : OrderLifecycle; // The `exhibit` keyword says that this part performs (exhibits) this behaviour. Each Order has its own instance of the OrderLifecycle state machine, which tracks the state of that order.
     }
 }

@@ -19,10 +19,9 @@ package OrderLifeCycle {
         doc /* Models the lifecycle of an Order through the shop. */
         
         initial;  // ← initial pseudostate
+        
         state placed;
-
         state inPreparation;
-
         state ready;
 
         // -- Terminal states -----------
