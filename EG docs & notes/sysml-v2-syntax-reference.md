@@ -177,6 +177,80 @@ package DrinkFulfilment {
 
 ---
 
+## Phase 4: Requirements & Constraints ✅
+
+### Working constructs
+
+```sysml
+package BusinessRules {
+    private import ScalarValues::*;
+    private import CoffeeShop::*;
+
+    // Requirements — traceable, human-readable intent
+    requirement def LoyaltyDiscountRequired {
+        doc /* Members must receive a minimum 10% discount. */
+        subject order : Order;
+    }
+
+    // Constraints — evaluable boolean rules
+    constraint def LoyaltyDiscountConstraint {
+        doc /* If the customer is a member, discount >= 10%. */
+
+        in isMember : Boolean;
+        in discount : Real;
+
+        isMember implies discount >= 10.0
+    }
+
+    constraint def OrderSizeConstraint {
+        in lineCount : Integer;
+
+        lineCount >= 1 and lineCount <= 10
+    }
+
+    constraint def VeganMilkConstraint {
+        in isVegan : Boolean;
+        in milkChoice : MilkOption;
+
+        isVegan implies (
+            milkChoice == MilkOption::oat or
+            milkChoice == MilkOption::soy or
+            milkChoice == MilkOption::almond or
+            milkChoice == MilkOption::none
+        )
+    }
+}
+```
+
+### Key points
+- `requirement def` — traceable statement with `subject` indicating what it applies to
+- `constraint def` — evaluable boolean rule with `in` parameters
+- `subject X : Type;` — declares what the requirement is about
+- `in` parameters decouple constraints from specific parts (reusable, testable in isolation)
+- Constraint body is a **bare boolean expression with no trailing semicolon**
+- `satisfy` / `verify` relationships (linking requirements to constraints) not yet verified
+
+### Verified boolean operators in constraint bodies
+| Operator | Example | Meaning |
+|---|---|---|
+| `implies` | `A implies B` | If A then B must be true |
+| `and` | `A and B` | Both must be true |
+| `or` | `A or B` | At least one must be true |
+| `>=` | `x >= 1` | Greater than or equal |
+| `<=` | `x <= 10` | Less than or equal |
+| `==` | `x == EnumDef::val` | Equality |
+| `::` | `MilkOption::oat` | Enum variant reference |
+| `( )` | `A implies (B or C)` | Grouping |
+
+### ⚠️ Syntax traps
+
+| What you might write | What Syside actually wants |
+|---|---|
+| `isMember implies discount >= 10.0;` | `isMember implies discount >= 10.0` (no semicolon) |
+| Constraint body with trailing `;` | Bare expression, no terminator |
+
+---
+
 ## General Patterns
 
 ### Package structure
@@ -233,7 +307,7 @@ coffeeshop-exercise/
 - [ ] `decide` / `merge` control nodes — proper syntax for Syside
 - [ ] Guard conditions on action flow transitions
 - [ ] `fork` / `join` for parallel actions
-- [ ] `requirement def` and `constraint def` (Phase 4)
-- [ ] `satisfy` / `verify` relationships
+- [x] `requirement def` and `constraint def` (Phase 4) ✅
+- [ ] `satisfy` / `verify` relationships (linking requirements to constraints)
 - [ ] Port definitions and connections
 - [ ] Syside Automator programmatic model access
