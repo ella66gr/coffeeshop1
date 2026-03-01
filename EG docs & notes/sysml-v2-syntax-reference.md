@@ -286,12 +286,16 @@ coffeeshop-exercise/
 │   └── domain/
 │       ├── coffeeshop.sysml          # Phase 1: structural
 │       ├── order-lifecycle.sysml      # Phase 2: state machine
-│       └── drink-fulfilment.sysml     # Phase 3: action flow
-├── generators/                        # Phase 5+: Python generation scripts
-├── generated/                         # Output (consider gitignoring)
+│       ├── drink-fulfilment.sysml     # Phase 3: action flow
+│       └── business-rules.sysml       # Phase 4: requirements & constraints
+├── generators/
+│   └── gen_typescript_types.py        # Phase 5: SysML → TypeScript interfaces
+├── generated/
+│   └── types.ts                       # Generated output — DO NOT EDIT
 ├── src/                               # Hand-written implementation
 ├── tests/
-└── scripts/
+├── scripts/
+└── sysml-v2-syntax-reference.md       # This file
 ```
 
 ### Git practices for model-driven development
@@ -299,6 +303,38 @@ coffeeshop-exercise/
 - **Atomic commits:** model change + regenerated scaffolding + implementation updates together
 - **Generated code:** either gitignore (regenerate in CI) or commit with sync verification
 - **Tagging:** semver tags where model + generators + implementation are known-good
+
+---
+
+## Phase 5: Generation Pipeline ✅
+
+No new SysML v2 syntax — this phase validates that the model constructs from Phases 1–4 can be read and transformed into executable code.
+
+### Type mapping: SysML v2 → TypeScript
+
+| SysML v2 | TypeScript |
+|---|---|
+| `String` | `string` |
+| `Boolean` | `boolean` |
+| `Integer` | `number` |
+| `Real` | `number` |
+| `enum def X` | `enum X` |
+| `part def X` | `interface X` |
+| `part def X :> Y` | `interface X extends Y` |
+| `ref x : Type;` | `x: Type;` (reference) |
+| `part x : Type[1..*];` | `x: Type[];` (array) |
+
+### Running the generator
+
+```bash
+python generators/gen_typescript_types.py model/domain/coffeeshop.sysml generated/types.ts
+```
+
+### Key principles
+- Generated files carry a `DO NOT EDIT` header — changes go in the model
+- Current generator uses regex text parsing (adequate for consistent `.sysml` structure)
+- For production / GenderSense: replace with Syside Automator for semantic model access
+- Generation policy decisions (e.g. `ref` → full object vs ID-only) are generator config, not model concerns
 
 ---
 
